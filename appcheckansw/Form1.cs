@@ -8,6 +8,7 @@ namespace appcheckansw
         {
             InitializeComponent();
             textBox1.Text = "ШО ТАКОЕ ПАРИШ?";
+            textBox2.Text = "это столица франции";
             //textBox2.Text = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length-25)]}\\dlyacheka.py";
         }
         public string answer = "Париж является столицей Франции.";
@@ -18,8 +19,8 @@ namespace appcheckansw
             string text2 = answer;
 
             ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = "python";
-            start.Arguments = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length - 25)]}\\dlyacheka.py \"{text1}\" \"{text2}\"";
+            start.FileName =  $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length - 25)]}\\dlyacheka.exe";
+            start.Arguments = $"\"{text1}\" \"{text2}\"";
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
             //start.CreateNoWindow = true;
