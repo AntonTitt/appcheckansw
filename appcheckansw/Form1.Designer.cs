@@ -28,74 +28,124 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
-            textBox1 = new TextBox();
-            textBox2 = new TextBox();
+            checkAnswerButton = new Button();
+            questionTextBox = new TextBox();
+            userAnswerTextBox = new TextBox();
             checkBox1 = new CheckBox();
-            textBox3 = new TextBox();
+            checkedAnswerTextBox = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            button1 = new Button();
+            button2 = new Button();
+            loadQuestionsButton = new Button();
+            openFileDialog1 = new OpenFileDialog();
             SuspendLayout();
             // 
-            // button1
+            // checkAnswerButton
             // 
-            button1.Location = new Point(12, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(94, 29);
-            button1.TabIndex = 0;
-            button1.Text = "работать";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            checkAnswerButton.Location = new Point(10, 7);
+            checkAnswerButton.Margin = new Padding(3, 2, 3, 2);
+            checkAnswerButton.Name = "checkAnswerButton";
+            checkAnswerButton.Size = new Size(66, 22);
+            checkAnswerButton.TabIndex = 0;
+            checkAnswerButton.Text = "работать";
+            checkAnswerButton.UseVisualStyleBackColor = true;
+            checkAnswerButton.Click += button1_Click;
             // 
-            // textBox1
+            // questionTextBox
             // 
-            textBox1.Location = new Point(12, 47);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(776, 84);
-            textBox1.TabIndex = 1;
+            questionTextBox.Location = new Point(10, 35);
+            questionTextBox.Margin = new Padding(3, 2, 3, 2);
+            questionTextBox.Multiline = true;
+            questionTextBox.Name = "questionTextBox";
+            questionTextBox.Size = new Size(680, 64);
+            questionTextBox.TabIndex = 1;
+            questionTextBox.TextChanged += questionTextBox_TextChanged;
             // 
-            // textBox2
+            // userAnswerTextBox
             // 
-            textBox2.Location = new Point(12, 137);
-            textBox2.Multiline = true;
-            textBox2.Name = "textBox2";
-            textBox2.PlaceholderText = "вводи ответ тут";
-            textBox2.Size = new Size(776, 301);
-            textBox2.TabIndex = 2;
+            userAnswerTextBox.Location = new Point(10, 103);
+            userAnswerTextBox.Margin = new Padding(3, 2, 3, 2);
+            userAnswerTextBox.Multiline = true;
+            userAnswerTextBox.Name = "userAnswerTextBox";
+            userAnswerTextBox.PlaceholderText = "вводи ответ тут";
+            userAnswerTextBox.Size = new Size(680, 227);
+            userAnswerTextBox.TabIndex = 2;
+            userAnswerTextBox.TextChanged += userAnswerTextBox_TextChanged;
             // 
             // checkBox1
             // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(112, 15);
+            checkBox1.Location = new Point(365, 7);
+            checkBox1.Margin = new Padding(3, 2, 3, 2);
             checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(192, 24);
+            checkBox1.Size = new Size(106, 19);
             checkBox1.TabIndex = 3;
-            checkBox1.Text = "показать верный ответ";
+            checkBox1.Text = "показать ответ";
             checkBox1.UseVisualStyleBackColor = true;
             checkBox1.CheckedChanged += checkBox1_CheckedChanged;
             // 
-            // textBox3
+            // checkedAnswerTextBox
             // 
-            textBox3.Location = new Point(310, 12);
-            textBox3.Multiline = true;
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(386, 29);
-            textBox3.TabIndex = 4;
+            checkedAnswerTextBox.Location = new Point(477, 9);
+            checkedAnswerTextBox.Margin = new Padding(3, 2, 3, 2);
+            checkedAnswerTextBox.Multiline = true;
+            checkedAnswerTextBox.Name = "checkedAnswerTextBox";
+            checkedAnswerTextBox.ScrollBars = ScrollBars.Vertical;
+            checkedAnswerTextBox.Size = new Size(211, 32);
+            checkedAnswerTextBox.TabIndex = 4;
             // 
             // backgroundWorker1
             // 
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
             // 
+            // button1
+            // 
+            button1.Location = new Point(82, 5);
+            button1.Name = "button1";
+            button1.Size = new Size(98, 24);
+            button1.TabIndex = 5;
+            button1.Text = "предыдущий";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click_1;
+            // 
+            // button2
+            // 
+            button2.Location = new Point(186, 5);
+            button2.Name = "button2";
+            button2.Size = new Size(83, 24);
+            button2.TabIndex = 6;
+            button2.Text = "следующий";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
+            // loadQuestionsButton
+            // 
+            loadQuestionsButton.Location = new Point(275, 5);
+            loadQuestionsButton.Name = "loadQuestionsButton";
+            loadQuestionsButton.Size = new Size(75, 23);
+            loadQuestionsButton.TabIndex = 7;
+            loadQuestionsButton.Text = "загрузить";
+            loadQuestionsButton.UseVisualStyleBackColor = true;
+            loadQuestionsButton.Click += loadQuestionsButton_Click;
+            // 
+            // openFileDialog1
+            // 
+            openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(textBox3);
-            Controls.Add(checkBox1);
-            Controls.Add(textBox2);
-            Controls.Add(textBox1);
+            ClientSize = new Size(700, 338);
+            Controls.Add(loadQuestionsButton);
+            Controls.Add(button2);
             Controls.Add(button1);
+            Controls.Add(checkedAnswerTextBox);
+            Controls.Add(checkBox1);
+            Controls.Add(userAnswerTextBox);
+            Controls.Add(questionTextBox);
+            Controls.Add(checkAnswerButton);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
             Text = "Form1";
             ResumeLayout(false);
@@ -104,11 +154,15 @@
 
         #endregion
 
-        private Button button1;
-        private TextBox textBox1;
-        private TextBox textBox2;
+        private Button checkAnswerButton;
+        private TextBox questionTextBox;
+        private TextBox userAnswerTextBox;
         private CheckBox checkBox1;
-        private TextBox textBox3;
+        private TextBox checkedAnswerTextBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private Button button1;
+        private Button button2;
+        private Button loadQuestionsButton;
+        private OpenFileDialog openFileDialog1;
     }
 }
