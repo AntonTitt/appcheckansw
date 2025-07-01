@@ -38,47 +38,44 @@
             button2 = new Button();
             loadQuestionsButton = new Button();
             openFileDialog1 = new OpenFileDialog();
+            changeQAButton = new Button();
             SuspendLayout();
             // 
             // checkAnswerButton
             // 
-            checkAnswerButton.Location = new Point(10, 7);
-            checkAnswerButton.Margin = new Padding(3, 2, 3, 2);
+            checkAnswerButton.Location = new Point(11, 9);
             checkAnswerButton.Name = "checkAnswerButton";
-            checkAnswerButton.Size = new Size(66, 22);
+            checkAnswerButton.Size = new Size(86, 29);
             checkAnswerButton.TabIndex = 0;
-            checkAnswerButton.Text = "работать";
+            checkAnswerButton.Text = "готово";
             checkAnswerButton.UseVisualStyleBackColor = true;
             checkAnswerButton.Click += button1_Click;
             // 
             // questionTextBox
             // 
-            questionTextBox.Location = new Point(10, 35);
-            questionTextBox.Margin = new Padding(3, 2, 3, 2);
+            questionTextBox.Location = new Point(11, 47);
             questionTextBox.Multiline = true;
             questionTextBox.Name = "questionTextBox";
-            questionTextBox.Size = new Size(680, 64);
+            questionTextBox.Size = new Size(777, 84);
             questionTextBox.TabIndex = 1;
             questionTextBox.TextChanged += questionTextBox_TextChanged;
             // 
             // userAnswerTextBox
             // 
-            userAnswerTextBox.Location = new Point(10, 103);
-            userAnswerTextBox.Margin = new Padding(3, 2, 3, 2);
+            userAnswerTextBox.Location = new Point(11, 137);
             userAnswerTextBox.Multiline = true;
             userAnswerTextBox.Name = "userAnswerTextBox";
             userAnswerTextBox.PlaceholderText = "вводи ответ тут";
-            userAnswerTextBox.Size = new Size(680, 227);
+            userAnswerTextBox.Size = new Size(777, 301);
             userAnswerTextBox.TabIndex = 2;
             userAnswerTextBox.TextChanged += userAnswerTextBox_TextChanged;
             // 
             // checkBox1
             // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(365, 7);
-            checkBox1.Margin = new Padding(3, 2, 3, 2);
+            checkBox1.Location = new Point(654, 9);
             checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(106, 19);
+            checkBox1.Size = new Size(134, 24);
             checkBox1.TabIndex = 3;
             checkBox1.Text = "показать ответ";
             checkBox1.UseVisualStyleBackColor = true;
@@ -86,12 +83,11 @@
             // 
             // checkedAnswerTextBox
             // 
-            checkedAnswerTextBox.Location = new Point(477, 9);
-            checkedAnswerTextBox.Margin = new Padding(3, 2, 3, 2);
+            checkedAnswerTextBox.Location = new Point(547, 397);
             checkedAnswerTextBox.Multiline = true;
             checkedAnswerTextBox.Name = "checkedAnswerTextBox";
             checkedAnswerTextBox.ScrollBars = ScrollBars.Vertical;
-            checkedAnswerTextBox.Size = new Size(211, 32);
+            checkedAnswerTextBox.Size = new Size(241, 41);
             checkedAnswerTextBox.TabIndex = 4;
             // 
             // backgroundWorker1
@@ -100,9 +96,10 @@
             // 
             // button1
             // 
-            button1.Location = new Point(82, 5);
+            button1.Location = new Point(103, 7);
+            button1.Margin = new Padding(3, 4, 3, 4);
             button1.Name = "button1";
-            button1.Size = new Size(98, 24);
+            button1.Size = new Size(112, 32);
             button1.TabIndex = 5;
             button1.Text = "предыдущий";
             button1.UseVisualStyleBackColor = true;
@@ -110,9 +107,10 @@
             // 
             // button2
             // 
-            button2.Location = new Point(186, 5);
+            button2.Location = new Point(222, 7);
+            button2.Margin = new Padding(3, 4, 3, 4);
             button2.Name = "button2";
-            button2.Size = new Size(83, 24);
+            button2.Size = new Size(106, 32);
             button2.TabIndex = 6;
             button2.Text = "следующий";
             button2.UseVisualStyleBackColor = true;
@@ -120,9 +118,10 @@
             // 
             // loadQuestionsButton
             // 
-            loadQuestionsButton.Location = new Point(275, 5);
+            loadQuestionsButton.Location = new Point(334, 7);
+            loadQuestionsButton.Margin = new Padding(3, 4, 3, 4);
             loadQuestionsButton.Name = "loadQuestionsButton";
-            loadQuestionsButton.Size = new Size(75, 23);
+            loadQuestionsButton.Size = new Size(86, 31);
             loadQuestionsButton.TabIndex = 7;
             loadQuestionsButton.Text = "загрузить";
             loadQuestionsButton.UseVisualStyleBackColor = true;
@@ -132,11 +131,23 @@
             // 
             openFileDialog1.FileName = "openFileDialog1";
             // 
+            // changeQAButton
+            // 
+            changeQAButton.Location = new Point(426, 8);
+            changeQAButton.Margin = new Padding(3, 4, 3, 4);
+            changeQAButton.Name = "changeQAButton";
+            changeQAButton.Size = new Size(86, 31);
+            changeQAButton.TabIndex = 8;
+            changeQAButton.Text = "изменить";
+            changeQAButton.UseVisualStyleBackColor = true;
+            changeQAButton.Click += changeQAButton_Click;
+            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(700, 338);
+            ClientSize = new Size(800, 451);
+            Controls.Add(changeQAButton);
             Controls.Add(loadQuestionsButton);
             Controls.Add(button2);
             Controls.Add(button1);
@@ -145,9 +156,8 @@
             Controls.Add(userAnswerTextBox);
             Controls.Add(questionTextBox);
             Controls.Add(checkAnswerButton);
-            Margin = new Padding(3, 2, 3, 2);
             Name = "Form1";
-            Text = "Form1";
+            Text = "Ввод и проверка";
             ResumeLayout(false);
             PerformLayout();
         }
@@ -164,5 +174,6 @@
         private Button button2;
         private Button loadQuestionsButton;
         private OpenFileDialog openFileDialog1;
+        private Button changeQAButton;
     }
 }

@@ -1,5 +1,6 @@
 using ExcelDataReader;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace appcheckansw
 {
@@ -11,7 +12,8 @@ namespace appcheckansw
             //questionTextBox.Text = "ШО ТАКОЕ ПАРИШ?";
             //userAnswerTextBox.Text = "это столица франции";
             //textBox2.Text = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length-25)]}\\dlyacheka.py";
-
+            //checkBox1.Hide();
+            checkedAnswerTextBox.Hide();
         }
         public static List<string> answers, questions;
         public static string[] userAnswers;
@@ -38,7 +40,7 @@ namespace appcheckansw
                 using (StreamReader reader = process.StandardOutput)
                 {
                     string result = reader.ReadToEnd();
-                    //MessageBox.Show(result);
+                    MessageBox.Show(result);
 
                     return result;
                 }
@@ -79,7 +81,7 @@ namespace appcheckansw
                 {
                     currentQuestion++;
                     questionTextBox.Text = questions[currentQuestion];
-                    userAnswerTextBox.Text=userAnswers[currentQuestion];
+                    userAnswerTextBox.Text = userAnswers[currentQuestion];
                 }
             }
         }
@@ -98,7 +100,7 @@ namespace appcheckansw
         {
             openFileDialog1.ShowDialog(this);
             (questions, answers) = QAPairLoader.LoadQAPairsFromFile(openFileDialog1.FileName);
-            if (questions != null || answers != null)
+            if (questions != null && answers != null)
             {
                 questionTextBox.Text = questions[currentQuestion];
                 userAnswers = new string[answers.Count];
@@ -115,6 +117,12 @@ namespace appcheckansw
         private void userAnswerTextBox_TextChanged(object sender, EventArgs e)
         {
             userAnswers[currentQuestion] = userAnswerTextBox.Text;
+        }
+
+        private void changeQAButton_Click(object sender, EventArgs e)
+        {
+            Form2 form2 = new Form2();
+            form2.Show();
         }
     }
     public class QAPairLoader
@@ -156,12 +164,22 @@ namespace appcheckansw
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    var values = line.Split(',');
+                    // Обработка CSV с учётом кавычек (разделитель - запятая)
+                    var values = ParseCsvLine(line);
 
-                    if (values.Length >= 2 && !string.IsNullOrWhiteSpace(values[0]) && !string.IsNullOrWhiteSpace(values[1]))
+                    if (values.Count >= 2 && !string.IsNullOrWhiteSpace(values[0]) && !string.IsNullOrWhiteSpace(values[1]))
                     {
-                        questions.Add(values[0].Trim());
-                        answers.Add(values[1].Trim());
+                        var question = values[0].Trim();
+                        var answerParts = SplitAnswers(values[1].Trim());
+
+                        foreach (var answer in answerParts)
+                        {
+                            if (!string.IsNullOrWhiteSpace(answer))
+                            {
+                                questions.Add(question);
+                                answers.Add(answer.Trim());
+                            }
+                        }
                     }
                 }
             }
@@ -169,7 +187,6 @@ namespace appcheckansw
 
         private static void LoadFromXlsx(string filePath, List<string> questions, List<string> answers)
         {
-            // Необходимо добавить пакет ExcelDataReader через NuGet
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
@@ -181,24 +198,90 @@ namespace appcheckansw
                     {
                         try
                         {
-                            // Предполагаем, что первый столбец - вопрос, второй - ответ
                             var question = reader.GetValue(0)?.ToString();
                             var answer = reader.GetValue(1)?.ToString();
 
                             if (!string.IsNullOrWhiteSpace(question) && !string.IsNullOrWhiteSpace(answer))
                             {
-                                questions.Add(question.Trim());
-                                answers.Add(answer.Trim());
+                                var answerParts = SplitAnswers(answer.Trim());
+
+                                foreach (var part in answerParts)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(part))
+                                    {
+                                        questions.Add(question.Trim());
+                                        answers.Add(part.Trim());
+                                    }
+                                }
                             }
                         }
                         catch (Exception)
                         {
-                            // Пропускаем строки с ошибками
                             continue;
                         }
                     }
                 } while (reader.NextResult());
             }
+        }
+
+        // Разбивает строку с ответами на отдельные ответы (учитывает кавычки и запятые)
+        private static List<string> SplitAnswers(string answerString)
+        {
+            var answers = new List<string>();
+
+            // Вариант 1: Ответы в кавычках ("ответ1", "ответ2")
+            if (answerString.Contains("\""))
+            {
+                // Удаляем все пробелы между кавычками и запятыми для упрощения разбиения
+                answerString = Regex.Replace(answerString, @"\s*,\s*", ",");
+                // Разбиваем по запятым вне кавычек
+                var matches = Regex.Matches(answerString, @"(?:\""([^\""]*)\""|([^,]+))");
+
+                foreach (Match match in matches)
+                {
+                    var answer = match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value;
+                    if (!string.IsNullOrWhiteSpace(answer))
+                        answers.Add(answer.Trim());
+                }
+            }
+            // Вариант 2: Простые ответы через запятую (ответ1, ответ2)
+            else
+            {
+                var parts = answerString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var part in parts)
+                {
+                    if (!string.IsNullOrWhiteSpace(part))
+                        answers.Add(part.Trim());
+                }
+            }
+
+            return answers;
+        }
+
+        // Парсит строку CSV с учётом кавычек (чтобы запятые внутри кавычек не считались разделителями)
+        private static List<string> ParseCsvLine(string line)
+        {
+            var values = new List<string>();
+            bool inQuotes = false;
+            int startIndex = 0;
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                if (line[i] == '"')
+                {
+                    inQuotes = !inQuotes;
+                }
+                else if (line[i] == ',' && !inQuotes)
+                {
+                    values.Add(line.Substring(startIndex, i - startIndex).Trim(' ', '"'));
+                    startIndex = i + 1;
+                }
+            }
+
+            // Добавляем последнее значение
+            values.Add(line.Substring(startIndex).Trim(' ', '"'));
+
+            return values;
         }
     }
 }

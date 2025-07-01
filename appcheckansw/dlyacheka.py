@@ -6,7 +6,7 @@ from pymorphy3 import MorphAnalyzer
 import sys
 import os
 
-os.environ["TRANSFORMERS_CACHE"] = os.path.join(os.getcwd(), "hf_cache")
+os.environ["HF_HOME"] = os.path.join(os.getcwd(), "hf_cache")
 #model = SentenceTransformer('intfloat/multilingual-e5-large')  #сосал: 'paraphrase-multilingual-MiniLM-L12-v2'
 #model = SentenceTransformer.load("C:\\Users\\123\\Desktop\\pypypypyp\\intfloatmultilinguale5large")
 # Указываем свою папку для моделей
@@ -30,8 +30,8 @@ morph = MorphAnalyzer()
 #if(sys.argv.__len__!=3):
 #    exit("sosal")
 
-user_answer = "париж красивый город"
-correct_answer ="Париж является столицей Франции."
+user_answers =  sys.argv[1].split(',') # ["париж красивый город","теория относительности объясняет гравитацию"] 
+correct_answers =  sys.argv[2].split(',') #["Париж является столицей Франции.","Теория относительности описывает гравитацию"]
 
 def normalize_text(text):
     text = re.sub(r'[^\w\s]', '', text.lower())
@@ -50,8 +50,47 @@ def compare_answers(user_answer, correct_answer, threshold=0.75):
     similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
     return similarity >= threshold, similarity
 
+def compare_answer_batches(user_answers, correct_answers, threshold=0.75):
+    """
+    Сравнивает каждый ответ пользователя с соответствующим эталонным ответом.
+    
+    Параметры:
+        user_answers (list): Список ответов пользователя.
+        correct_answers (list): Список эталонных ответов.
+        threshold (float): Порог сходства (0.75 по умолчанию).
+    
+    Возвращает:
+        list: Список пар (is_correct, similarity).
+    """
+    # Нормализация текста (опционально)
+    def normalize(text):
+        return text.lower().strip().translate(str.maketrans('', '', string.punctuation)).lower()
+    
+    user_answers = [normalize(ans) for ans in user_answers]
+    correct_answers = [normalize(ans) for ans in correct_answers]
+    
+    # Получаем эмбеддинги для всех ответов
+    user_embeddings = model.encode(user_answers, show_progress_bar=True)
+    correct_embeddings = model.encode(correct_answers, show_progress_bar=True)
+    
+    # Считаем попарное косинусное сходство
+    similarities = cosine_similarity(user_embeddings, correct_embeddings)
+    
+    # Для каждого ответа берем соответствующую пару (i, i)
+    results = []
+    for i in range(len(user_answers)):
+        sim = similarities[i, i]
+        results.append((sim >= threshold, sim))
+    
+    return results
 
 
-is_correct, similarity = compare_answers(user_answer, correct_answer, threshold=0.9)
-print(f"{is_correct} (сходство: {similarity:.5f})")
+results = compare_answer_batches(user_answers, correct_answers, threshold=0.9)
+
+# Выводим результаты
+for i, (is_correct, sim) in enumerate(results):
+    print(f"{i+1}: {'True' if is_correct else 'False'} (сходство: {sim:.4f})")
+
+#is_correct, similarity = compare_answers(user_answer, correct_answer, threshold=0.9)
+#print(f"{is_correct} (сходство: {similarity:.5f})")
 #input()
