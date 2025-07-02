@@ -52,10 +52,26 @@ namespace appcheckansw
         private void button2_Click(object sender, EventArgs e)
         {
             s = QATextBox.Text;
+            if (!checkBox1.Checked)
+            {
+                saveFileDialog1.ShowDialog();
+                string path = saveFileDialog1.FileName;
+                if (path != null)
+                {
+                    //MessageBox.Show(path);
 
-            QuestionAnswerParser.ParseAndSaveToExcel(s, "QuestionsAnswers.xlsx");
-            //s=answers[9];
-            //s = "Вопрос #1: \r\nШО ТАКОЕ ПАРИШ\r\nОтвет #1: \r\nПариж является столицей Франции\r\n\r\nВопрос #2: \r\nчто такое фотосинтез\r\nОтвет #1: \r\nхимический процесс преобразования энергии видимого света в энергию химических связей органических веществ при участии фотосинтетических пигментов.\r\n";
+                    QuestionAnswerParser.ParseAndSaveToExcel(s, path);
+                    MessageBox.Show($"Файл сохранен. путь: {path}");
+                    //s=answers[9];
+                    //s = "Вопрос #1: \r\nШО ТАКОЕ ПАРИШ\r\nОтвет #1: \r\nПариж является столицей Франции\r\n\r\nВопрос #2: \r\nчто такое фотосинтез\r\nОтвет #1: \r\nхимический процесс преобразования энергии видимого света в энергию химических связей органических веществ при участии фотосинтетических пигментов.\r\n";
+                }
+                else { MessageBox.Show("Выберите файл для пересохранения"); }
+            }
+            else
+            {
+                QuestionAnswerParser.ParseAndSaveToExcel(s, "QuestionsAnswers.xlsx");
+                MessageBox.Show($"Файл сохранен. путь: {Directory.GetCurrentDirectory()}");
+            }
         }
 
         private void QATextBox_TextChanged(object sender, EventArgs e)
@@ -79,7 +95,7 @@ namespace appcheckansw
                     InsertNewQuestion();
                     //Thread.Sleep(500);
                     //InsertNewAnswer(currentLineText);
-                    QATextBox.AppendText(Environment.NewLine +Environment.NewLine + "Ответ:" + Environment.NewLine);
+                    QATextBox.AppendText(Environment.NewLine + Environment.NewLine + "Ответ:" + Environment.NewLine);
                 }
                 // Если строка начинается с "Вопрос #X:" — добавляем "Ответ #X.1:" на новой строке
                 else if (currentLineText.Trim().StartsWith("Вопрос #"))

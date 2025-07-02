@@ -89,8 +89,8 @@ results = compare_answer_batches(user_answers, correct_answers, threshold=0.9)
 
 # Выводим результаты
 for i, (is_correct, sim) in enumerate(results):
-    print(f"{i+1}: {'True' if is_correct else 'False'} (сходство: {sim:.4f})")
-
+    print(f"{i+1}:{sim:.5f}")
+    #print(f"{i+1}: {'True' if is_correct else 'False'} (сходство: {sim:.4f})")
 #is_correct, similarity = compare_answers(user_answer, correct_answer, threshold=0.9)
 #print(f"{is_correct} (сходство: {similarity:.5f})")
 #input()

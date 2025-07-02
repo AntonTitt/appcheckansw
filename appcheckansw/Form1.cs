@@ -1,6 +1,8 @@
+using DocumentFormat.OpenXml.Presentation;
 using ExcelDataReader;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Xml.Xsl;
 
 namespace appcheckansw
 {
@@ -12,17 +14,33 @@ namespace appcheckansw
             //questionTextBox.Text = "ШО ТАКОЕ ПАРИШ?";
             //userAnswerTextBox.Text = "это столица франции";
             //textBox2.Text = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length-25)]}\\dlyacheka.py";
-            //checkBox1.Hide();
+            checkBox1.Hide();
             checkedAnswerTextBox.Hide();
+            userAnswerTextBox.Enabled = false;
+            questionTextBox.ReadOnly = true;
         }
         public static List<string> answers, questions;
         public static string[] userAnswers;
-        public int currentQuestion = 0;
+        public int currentQuestion = 0, currentAnswer = 0;
+        public static int[] de;//для сохранения индекса текущего ответа
 
-        public async Task<string> bublic()
+        public static string bublic()
         {
-            string text1 = ""; string text2 = "";
-            foreach (var uanswer in userAnswers) { text1 += uanswer + ','; }
+            string text1 = ""; string text2 = "", preva = "", prevq = "";
+            for (int i = 0; i < questions.Count; i++)
+            {
+                var q = questions[i];
+                if (prevq != q)
+                {
+                    prevq = q;
+                    preva = userAnswers[i];
+                    text1 += preva + ",";
+                }
+                else
+                {
+                    text1 += preva + ",";
+                }
+            }
             foreach (var answer in answers) { text2 += answer + ","; }
             text1 = text1.TrimEnd(',');
             text2 = text2.TrimEnd(',');
@@ -50,7 +68,78 @@ namespace appcheckansw
         private async void button1_Click(object sender, EventArgs e)
         {
             checkAnswerButton.Enabled = false;
-            checkedAnswerTextBox.Text = await Task.Run(bublic);
+
+            List<float> result = new List<float>();
+            float[] tm = new float[questions.Count];
+            string[] answersnew = new string[questions.Count];
+            int ind = -1;
+            string prevq = "";
+            for (int i = 0; i < questions.Count; i++)
+            {
+                if (questions[i] == prevq)
+                {
+                    answersnew[i] = userAnswers[ind];
+                }
+                else
+                {
+                    prevq = questions[i];
+                    ind++;
+                    answersnew[i] = userAnswers[ind];
+                }
+            }
+            userAnswers = answersnew;
+
+            string checkedAnsw = await Task.Run(bublic);
+            string[] chchc = checkedAnsw.Split('\n');
+
+            checkedAnswerTextBox.Text = checkedAnsw;
+            checkedAnswerTextBox.Text += $"{Environment.NewLine}{chchc.Length}";
+            ISet<string> set = new HashSet<string>(questions);
+            float[] answvaluevisible = new float[set.Count], answvalue = new float[chchc.Length - 1];
+            for (int i = 0; i < chchc.Length - 1; i++)
+            {
+                checkedAnsw = chchc[i][(chchc[i].Length - 8)..];
+                answvalue[i] = Convert.ToSingle(checkedAnsw.Replace('.', ','));
+                checkedAnswerTextBox.Text += $"{checkedAnsw}, ";
+            }
+            ind = 0;
+            prevq = questions[0];
+            for (int i = 0; i < questions.Count; i++)
+            {
+
+
+                if (questions[i] == prevq)
+                {
+                    result.Add(Convert.ToSingle(Convert.ToString(answvalue[ind]).Replace(".", ",")));
+                }
+                else
+                {
+                    prevq = questions[i];
+                    for (int j = de[ind]; j < de[ind + 1]; j++)
+                    {
+                        tm[j] = result.Max();
+                    }
+                    ind++;
+                    result.Clear();
+                    result.Add(Convert.ToSingle(Convert.ToString(answvalue[ind]).Replace(".", ",")));
+                }
+            }
+            for (int j = de[ind]; j < questions.Count; j++)
+            {
+                tm[j] = result.Max();
+            }
+            //MessageBox.Show($"{answvaluevisible.ToString()}");
+            string rrrrr = "";
+            foreach(var eee in tm) {rrrrr += $"{eee.ToString()} {Environment.NewLine}"; }
+            MessageBox.Show(rrrrr);
+
+
+            foreach (var qwqe in set)
+            {
+                checkedAnswerTextBox.Text += qwqe.ToString();
+            }
+
+
             checkAnswerButton.Enabled = true;
             //textBox3.Text=backgroundWorker1.DoWork(sender,e);
         }
@@ -77,35 +166,105 @@ namespace appcheckansw
         {
             if (questions != null)
             {
-                if (questions.Count - 1 > currentQuestion)
+                var (previous, nextUniqueIndex) = FindDifferentAdjacentStringIndices(questions.ToArray(), currentQuestion, true);
+                if (nextUniqueIndex > 0)
                 {
-                    currentQuestion++;
+                    currentAnswer++;
+                    currentQuestion = nextUniqueIndex;
                     questionTextBox.Text = questions[currentQuestion];
-                    userAnswerTextBox.Text = userAnswers[currentQuestion];
+                    userAnswerTextBox.Text = userAnswers[de[currentAnswer]];
+                    checkedAnswerTextBox.Text = de[currentAnswer].ToString();
+                    //foreach(var q in questions.ToArray()) {checkedAnswerTextBox.Text += $"{q.ToString()} "; }
+                }
+                if (previous > 0)
+                {
+
                 }
             }
         }
 
+
         private void button1_Click_1(object sender, EventArgs e)//prev q
         {
-            if (currentQuestion != 0)
+            if (questions != null)
             {
-                currentQuestion--;
-                questionTextBox.Text = questions[currentQuestion];
-                userAnswerTextBox.Text = userAnswers[currentQuestion];
+                var (previous, nextUniqueIndex) = FindDifferentAdjacentStringIndices(questions.ToArray(), currentQuestion, true);
+                if (nextUniqueIndex > 0)
+                {
+
+                }
+                if (previous > 0)
+                {
+                    currentAnswer--;
+                    currentQuestion = previous;
+                    questionTextBox.Text = questions[currentQuestion];
+                    userAnswerTextBox.Text = userAnswers[de[currentAnswer]];
+                    checkedAnswerTextBox.Text = de[currentAnswer].ToString();
+                    //foreach(var q in questions.ToArray()) {checkedAnswerTextBox.Text += $"{q.ToString()} "; }
+                }
             }
         }
+        public static (int previousIndex, int nextIndex) FindDifferentAdjacentStringIndices(string[] array, int currentIndex, bool includePrevious = false)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+
+            if (currentIndex < 0 || currentIndex >= array.Length)
+                throw new ArgumentOutOfRangeException(nameof(currentIndex));
+
+            string current = array[currentIndex];
+            int previousDifferentIndex = -1;
+            int nextDifferentIndex = -1;
+
+            // Поиск предыдущей отличной строки
+            if (includePrevious)
+            {
+                for (int i = currentIndex - 1; i >= 0; i--)
+                {
+                    if (!string.Equals(array[i], current, StringComparison.Ordinal))
+                    {
+                        previousDifferentIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // Поиск следующей отличной строки
+            for (int i = currentIndex + 1; i < array.Length; i++)
+            {
+                if (!string.Equals(array[i], current, StringComparison.Ordinal))
+                {
+                    nextDifferentIndex = i;
+                    break;
+                }
+            }
+
+            return (previousDifferentIndex, nextDifferentIndex);
+        }
+
 
         private void loadQuestionsButton_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog(this);
-            (questions, answers) = QAPairLoader.LoadQAPairsFromFile(openFileDialog1.FileName);
-            if (questions != null && answers != null)
+            if (openFileDialog1.SafeFileName != "openFileDialog1")
             {
-                questionTextBox.Text = questions[currentQuestion];
-                userAnswers = new string[answers.Count];
-                //userAnswerTextBox.Text += answers.Count;
-                //userAnswerTextBox.Text += questions.Count;
+                userAnswerTextBox.Enabled = true;
+                (questions, answers) = QAPairLoader.LoadQAPairsFromFile(openFileDialog1.FileName);
+
+                de = new int[questions.Count];
+                for (int i = 0; i < questions.Count; i++)
+                {
+                    var (x, y) = FindDifferentAdjacentStringIndices(questions.ToArray(), i);
+                    if (y == -1) { y = 0; }
+                    de[i] = y;
+                }
+                de[0] = 1;
+                de = de.ToHashSet().ToArray();
+                if (questions != null && answers != null)
+                {
+                    questionTextBox.Text = questions[currentQuestion];
+                    userAnswers = new string[answers.Count];
+                }
             }
         }
 
@@ -116,7 +275,7 @@ namespace appcheckansw
 
         private void userAnswerTextBox_TextChanged(object sender, EventArgs e)
         {
-            userAnswers[currentQuestion] = userAnswerTextBox.Text;
+            userAnswers[de[currentAnswer]] = userAnswerTextBox.Text;
         }
 
         private void changeQAButton_Click(object sender, EventArgs e)

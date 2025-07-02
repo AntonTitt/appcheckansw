@@ -32,6 +32,8 @@
             QATextBox = new TextBox();
             openFileDialog1 = new OpenFileDialog();
             button2 = new Button();
+            saveFileDialog1 = new SaveFileDialog();
+            checkBox1 = new CheckBox();
             SuspendLayout();
             // 
             // button1
@@ -69,11 +71,24 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Checked = true;
+            checkBox1.CheckState = CheckState.Checked;
+            checkBox1.Location = new Point(212, 15);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(173, 24);
+            checkBox1.TabIndex = 3;
+            checkBox1.Text = "создать новый файл";
+            checkBox1.UseVisualStyleBackColor = true;
+            // 
             // Form2
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(checkBox1);
             Controls.Add(button2);
             Controls.Add(QATextBox);
             Controls.Add(button1);
@@ -89,5 +104,7 @@
         private TextBox QATextBox;
         private OpenFileDialog openFileDialog1;
         private Button button2;
+        private SaveFileDialog saveFileDialog1;
+        private CheckBox checkBox1;
     }
 }

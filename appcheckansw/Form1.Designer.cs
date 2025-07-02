@@ -83,11 +83,11 @@
             // 
             // checkedAnswerTextBox
             // 
-            checkedAnswerTextBox.Location = new Point(547, 397);
+            checkedAnswerTextBox.Location = new Point(398, 214);
             checkedAnswerTextBox.Multiline = true;
             checkedAnswerTextBox.Name = "checkedAnswerTextBox";
             checkedAnswerTextBox.ScrollBars = ScrollBars.Vertical;
-            checkedAnswerTextBox.Size = new Size(241, 41);
+            checkedAnswerTextBox.Size = new Size(390, 224);
             checkedAnswerTextBox.TabIndex = 4;
             // 
             // backgroundWorker1
