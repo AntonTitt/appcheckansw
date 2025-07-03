@@ -110,18 +110,29 @@ namespace appcheckansw
 
                 if (questions[i] == prevq)
                 {
-                    result.Add(Convert.ToSingle(Convert.ToString(answvalue[ind]).Replace(".", ",")));
+                    result.Add(Convert.ToSingle(Convert.ToString(answvalue[i]).Replace(".", ",")));
                 }
                 else
                 {
                     prevq = questions[i];
-                    for (int j = de[ind]; j < de[ind + 1]; j++)
+                    if (ind == 0)
                     {
-                        tm[j] = result.Max();
+                        for (int j = 0; j < de[ind + 1]; j++)
+                        {
+                            tm[j] = result.Max();
+                        }
+
+                    }
+                    else
+                    {
+                        for (int j = de[ind]; j < de[ind + 1]; j++)
+                        {
+                            tm[j] = result.Max();
+                        }
                     }
                     ind++;
                     result.Clear();
-                    result.Add(Convert.ToSingle(Convert.ToString(answvalue[ind]).Replace(".", ",")));
+                    result.Add(Convert.ToSingle(Convert.ToString(answvalue[i]).Replace(".", ",")));
                 }
             }
             for (int j = de[ind]; j < questions.Count; j++)
@@ -129,15 +140,13 @@ namespace appcheckansw
                 tm[j] = result.Max();
             }
             //MessageBox.Show($"{answvaluevisible.ToString()}");
+            tm=tm.ToHashSet().ToArray();
             string rrrrr = "";
-            foreach(var eee in tm) {rrrrr += $"{eee.ToString()} {Environment.NewLine}"; }
-            MessageBox.Show(rrrrr);
+            for (int i = 0; i < tm.Length; i++) { checkedAnswerTextBox.Text += rrrrr += $"Вопрос {i}: {tm[i].ToString()} {Environment.NewLine}"; }
+            MessageBox.Show(rrrrr, "Точность ответов");
 
 
-            foreach (var qwqe in set)
-            {
-                checkedAnswerTextBox.Text += qwqe.ToString();
-            }
+            //foreach (var qwqe in set) { checkedAnswerTextBox.Text += qwqe.ToString(); }
 
 
             checkAnswerButton.Enabled = true;
