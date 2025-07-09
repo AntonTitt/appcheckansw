@@ -11,8 +11,6 @@ namespace appcheckansw
         public Form1()
         {
             InitializeComponent();
-            //questionTextBox.Text = "ШО ТАКОЕ ПАРИШ?";
-            //userAnswerTextBox.Text = "это столица франции";
             //textBox2.Text = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length-25)]}\\dlyacheka.py";
             checkBox1.Hide();
             checkedAnswerTextBox.Hide();
@@ -46,11 +44,11 @@ namespace appcheckansw
             text2 = text2.TrimEnd(',');
 
             ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length - 25)]}\\dlyacheka.exe";
+            start.FileName = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length - 25)]}\\dlyacheka.exe"; // при перемещении файлов проекта могут возникнуть проблемы
             start.Arguments = $"\"{text1}\" \"{text2}\"";
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
-            //start.CreateNoWindow = true;
+            //start.CreateNoWindow = true;// не знаю как лучше но пускай пока так
             start.WindowStyle = ProcessWindowStyle.Minimized;
 
             using (Process process = Process.Start(start))
@@ -58,7 +56,7 @@ namespace appcheckansw
                 using (StreamReader reader = process.StandardOutput)
                 {
                     string result = reader.ReadToEnd();
-                    MessageBox.Show(result);
+                    //MessageBox.Show(result);
 
                     return result;
                 }
@@ -72,22 +70,24 @@ namespace appcheckansw
             List<float> result = new List<float>();
             float[] tm = new float[questions.Count];
             string[] answersnew = new string[questions.Count];
-            int ind = -1;
-            string prevq = "";
+
+            //var (previous, nextUniqueIndex) = FindDifferentAdjacentStringIndices(questions.ToArray(), 0, true);
+            int ind = 0;
+            string prevq = questions[0];
             for (int i = 0; i < questions.Count; i++)
             {
                 if (questions[i] == prevq)
                 {
-                    answersnew[i] = userAnswers[ind];
+                    answersnew[i] = userAnswers[de[ind]];
                 }
                 else
                 {
                     prevq = questions[i];
                     ind++;
-                    answersnew[i] = userAnswers[ind];
+                    answersnew[i] = userAnswers[de[ind]];
                 }
             }
-            userAnswers = answersnew;
+            userAnswers = answersnew;//А ЗАЧЕМ??
 
             string checkedAnsw = await Task.Run(bublic);
             string[] chchc = checkedAnsw.Split('\n');
@@ -140,10 +140,13 @@ namespace appcheckansw
                 tm[j] = result.Max();
             }
             //MessageBox.Show($"{answvaluevisible.ToString()}");
-            tm=tm.ToHashSet().ToArray();
+            tm = tm.ToHashSet().ToArray();
             string rrrrr = "";
-            for (int i = 0; i < tm.Length; i++) { checkedAnswerTextBox.Text += rrrrr += $"Вопрос {i}: {tm[i].ToString()} {Environment.NewLine}"; }
+            for (int i = 0; i < tm.Length; i++) { checkedAnswerTextBox.Text += rrrrr += $"Вопрос {i + 1}: {tm[i] > 0.88} {Environment.NewLine}"; }
             MessageBox.Show(rrrrr, "Точность ответов");
+            /*
+             Потом придумать можно что с ответами делать запись файл там или на сервер переслать
+             */
 
 
             //foreach (var qwqe in set) { checkedAnswerTextBox.Text += qwqe.ToString(); }
@@ -332,7 +335,7 @@ namespace appcheckansw
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    // Обработка CSV с учётом кавычек (разделитель - запятая)
+                    // обработка CSV с учётом кавычек (разделитель - запятая)
                     var values = ParseCsvLine(line);
 
                     if (values.Count >= 2 && !string.IsNullOrWhiteSpace(values[0]) && !string.IsNullOrWhiteSpace(values[1]))
@@ -392,17 +395,13 @@ namespace appcheckansw
             }
         }
 
-        // Разбивает строку с ответами на отдельные ответы (учитывает кавычки и запятые)
         private static List<string> SplitAnswers(string answerString)
         {
             var answers = new List<string>();
 
-            // Вариант 1: Ответы в кавычках ("ответ1", "ответ2")
             if (answerString.Contains("\""))
             {
-                // Удаляем все пробелы между кавычками и запятыми для упрощения разбиения
                 answerString = Regex.Replace(answerString, @"\s*,\s*", ",");
-                // Разбиваем по запятым вне кавычек
                 var matches = Regex.Matches(answerString, @"(?:\""([^\""]*)\""|([^,]+))");
 
                 foreach (Match match in matches)
@@ -412,7 +411,6 @@ namespace appcheckansw
                         answers.Add(answer.Trim());
                 }
             }
-            // Вариант 2: Простые ответы через запятую (ответ1, ответ2)
             else
             {
                 var parts = answerString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -426,7 +424,6 @@ namespace appcheckansw
             return answers;
         }
 
-        // Парсит строку CSV с учётом кавычек (чтобы запятые внутри кавычек не считались разделителями)
         private static List<string> ParseCsvLine(string line)
         {
             var values = new List<string>();
@@ -446,7 +443,6 @@ namespace appcheckansw
                 }
             }
 
-            // Добавляем последнее значение
             values.Add(line.Substring(startIndex).Trim(' ', '"'));
 
             return values;
