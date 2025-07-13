@@ -21,6 +21,7 @@ namespace appcheckansw
         public static string[] userAnswers;
         public int currentQuestion = 0, currentAnswer = 0;
         public static int[] de;//для сохранения индекса текущего ответа
+        static bool useinterpretetere = false;//использовать интерпритатор (поставить false если надо предкомпилированую)
 
         public static string bublic()
         {
@@ -44,8 +45,16 @@ namespace appcheckansw
             text2 = text2.TrimEnd(',');
 
             ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length - 25)]}\\dlyacheka.exe"; // при перемещении файлов проекта могут возникнуть проблемы
-            start.Arguments = $"\"{text1}\" \"{text2}\"";
+            if (useinterpretetere)
+            {
+                start.FileName = "python"; // или полный путь к python.exe
+                start.Arguments = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length - 25)]}\\dlyacheka.py \"{text1}\" \"{text2}\"";//python файл
+            }
+            else
+            {
+                start.FileName = $"{System.IO.Directory.GetCurrentDirectory()[..(System.IO.Directory.GetCurrentDirectory().Length - 25)]}\\dlyacheka.exe"; // при перемещении файлов проекта могут возникнуть проблемы
+                start.Arguments = $"\"{text1}\" \"{text2}\"";
+            }
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
             //start.CreateNoWindow = true;// не знаю как лучше но пускай пока так
