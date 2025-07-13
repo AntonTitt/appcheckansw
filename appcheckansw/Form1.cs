@@ -66,6 +66,7 @@ namespace appcheckansw
         private async void button1_Click(object sender, EventArgs e)
         {
             checkAnswerButton.Enabled = false;
+            loadQuestionsButton.Enabled = false;
 
             List<float> result = new List<float>();
             float[] tm = new float[questions.Count];
@@ -90,7 +91,7 @@ namespace appcheckansw
             userAnswers = answersnew;//А ЗАЧЕМ??
 
             string checkedAnsw = await Task.Run(bublic);
-            string[] chchc = checkedAnsw.Split('\n');
+            string[] chchc = checkedAnsw.Split('\n');//тут хранится точность при сравнении ответов (в массиве 8 элементов а не 7 по ошибке и это теперь часть программы)
 
             checkedAnswerTextBox.Text = checkedAnsw;
             checkedAnswerTextBox.Text += $"{Environment.NewLine}{chchc.Length}";
@@ -153,6 +154,7 @@ namespace appcheckansw
 
 
             checkAnswerButton.Enabled = true;
+            loadQuestionsButton.Enabled = true;
             //textBox3.Text=backgroundWorker1.DoWork(sender,e);
         }
 
